@@ -1,25 +1,48 @@
-import { Request, Response } from 'express';
-import prisma from '../prismaClient';
+import { Request, Response } from "express";
+import { prismaClient } from "../utils/databaseUtil";
 
 export const getCalendarEvents = async (req: Request, res: Response) => {
-const { date, month, year } = req.query;
+    try {
+        const { date, month, year } = req.query;
 
-let filter: any = {};
+        let filter: any = {};
 
-if (date) filter.date = new Date(String(date));
-if (month && year) {
-filter.date = {
-gte: new Date(`${year}-${month}-01`),
-lt: new Date(`${year}-${Number(month) + 1}-01`),
-};
-}
+        // 1) Jika filter by specific date
+        if (date) {
+        const parsed = new Date(String(date));
+        if (isNaN(parsed.getTime())) {
+            return res.status(400).json({ message: "Invalid date format" });
+        }
 
-const schedules = await prisma.eventSchedule.findMany({
-where: filter,
-include: {
-PerformanceEvent: true,
-},
-});
+        filter.date = parsed;
+        }
 
-res.json(schedules);
+        // 2) Jika filter by month & year
+        if (month && year) {
+        const m = Number(month);
+        const y = Number(year);
+
+        if (isNaN(m) || isNaN(y)) {
+            return res.status(400).json({ message: "Invalid month/year format" });
+        }
+
+        filter.date = {
+            gte: new Date(`${y}-${String(m).padStart(2, "0")}-01`),
+            lt: new Date(`${y}-${String(m + 1).padStart(2, "0")}-01`),
+        };
+        }
+
+        const schedules = await prismaClient.eventSchedule.findMany({
+        where: filter,
+        include: {
+            PerformanceEvent: true,
+        },
+        });
+
+        return res.json(schedules);
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Something went wrong" });
+    }
 };

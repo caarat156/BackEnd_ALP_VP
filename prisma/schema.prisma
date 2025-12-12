@@ -5,7 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../generated/prisma"
 }
 
@@ -13,63 +13,115 @@ datasource db {
   provider = "postgresql"
 }
 
+/* ---------- PLACEHOLDER MODELS (karena belum kamu Kirim) ---------- */
+
+model PlaceCategory {
+  placeCategoryId Int @id @default(autoincrement())
+  name String
+  places Place[]
+}
+
+model Location {
+  locationId Int @id @default(autoincrement())
+  name String
+  places Place[]
+}
+
+model PlaceReview {
+  placeReviewId Int @id @default(autoincrement())
+  placeId Int
+  userId Int
+  content String
+
+  Place Place @relation(fields: [placeId], references: [placeId])
+  User  User  @relation(fields: [userId], references: [userId])
+}
+
+model ReelsContent {
+  reelsContentId Int @id @default(autoincrement())
+  placeId Int
+  userId Int
+  url String
+
+  Place Place @relation(fields: [placeId], references: [placeId])
+  User  User  @relation(fields: [userId], references: [userId])
+}
+
+
+/* --------------------- MAIN MODELS ---------------------- */
+
 model User {
-    userId Int @id @default(autoincrement())
-    selectedLocation Int?
-    name String
-    username String @unique
-    email String @unique
-    password String
-    phoneNumber String?
-    profilePhoto String?
-    bookings EventBooking[]
-    reviews PlaceReview[]
-    reels ReelsContent[]
+  userId Int @id @default(autoincrement())
+  selectedLocation Int?
+  name String
+  username String @unique
+  email String @unique
+  password String
+  phoneNumber String?
+  profilePhoto String?
+
+  bookings EventBooking[]
+  reviews  PlaceReview[]
+  reels    ReelsContent[]
 }
 
 model Place {
-    placeId Int @id @default(autoincrement())
-    placeCategoryId Int
-    locationId Int
-    placeName String
-    placeDescription String
-    address String
-    gmaksLink String?
-    imageUrl String?
-    ratingAvg Float? @default(0)
-    reviews PlaceReview[]
-    reels ReelsContent[]
-    performances PerformanceEvent[]
+  placeId Int @id @default(autoincrement())
+  placeCategoryId Int
+  locationId Int
+  placeName String
+  placeDescription String
+  address String
+  gmaksLink String?
+  imageUrl String?
+  ratingAvg Float? @default(0)
+
+  // relations
+  PlaceCategory PlaceCategory @relation(fields: [placeCategoryId], references: [placeCategoryId])
+  Location      Location      @relation(fields: [locationId], references: [locationId])
+
+  reviews PlaceReview[]
+  reels   ReelsContent[]
+  performances PerformanceEvent[]
 }
 
 model PerformanceEvent {
-    performanceEventId Int @id @default(autoincrement())
-    placeId Int
-    title String
-    eventDescription String
-    venueAddress String
-    gmaksLink String?
-    imageUrl String?
-    schedules EventSchedule[]
-    bookings EventBooking[]
+  performanceEventId Int @id @default(autoincrement())
+  placeId Int
+  title String
+  eventDescription String
+  venueAddress String
+  gmaksLink String?
+  imageUrl String?
+
+  Place Place @relation(fields: [placeId], references: [placeId])
+
+  schedules EventSchedule[]
+  bookings  EventBooking[]
 }
 
 model EventSchedule {
-    eventScheduleId Int @id @default(autoincrement())
-    performanceEventId Int
-    date DateTime
-    startTime String
-    endTime String
-    price Float
-    bookings EventBooking[]
+  eventScheduleId Int @id @default(autoincrement())
+  performanceEventId Int
+  date DateTime
+  startTime String
+  endTime String
+  price Float
+
+  PerformanceEvent PerformanceEvent @relation(fields: [performanceEventId], references: [performanceEventId])
+  bookings EventBooking[]
 }
 
 model EventBooking {
-    eventBookingId Int @id @default(autoincrement())
-    userId Int
-    performanceEventId Int
-    eventScheduleId Int
-    totalPrice Float
-    quantity Int
-    status String
+  eventBookingId Int @id @default(autoincrement())
+  userId Int
+  performanceEventId Int
+  eventScheduleId Int
+  totalPrice Float
+  quantity Int
+  status String
+
+  User             User             @relation(fields: [userId], references: [userId])
+  PerformanceEvent PerformanceEvent @relation(fields: [performanceEventId], references: [performanceEventId])
+  EventSchedule    EventSchedule    @relation(fields: [eventScheduleId], references: [eventScheduleId])
 }

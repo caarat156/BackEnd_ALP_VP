@@ -1,30 +1,93 @@
-import { Request, Response } from 'express';
-import prisma from '../prismaClient';
+import { Request, Response } from "express";
+import { prismaClient } from "../utils/databaseUtil";
 
+// =============================
+// GET ALL PENSI
+// =============================
 export const getAllPensi = async (req: Request, res: Response) => {
-const events = await prisma.performanceEvent.findMany({
-include: {
-Place: true,
-},
-});
-res.json(events);
+    try {
+        const events = await prismaClient.performanceEvent.findMany({
+        include: {
+            Place: true,          // Include tempat / lokasi
+        },
+        });
+
+        return res.json({
+        status: true,
+        data: events
+        });
+    } catch (error) {
+        return res.status(500).json({
+        status: false,
+        message: "Failed to fetch pensi",
+        error: String(error),
+        });
+    }
 };
 
+// =============================
+// GET PENSI DETAIL
+// =============================
 export const getPensiDetail = async (req: Request, res: Response) => {
-const eventId = Number(req.params.id);
+    try {
+        const eventId = Number(req.params.id);
 
-const event = await prisma.performanceEvent.findUnique({
-where: { performanceEventId: eventId },
-include: { schedules: true, Place: true },
-});
+        if (isNaN(eventId)) {
+        return res.status(400).json({ status: false, message: "Invalid ID" });
+        }
 
-res.json(event);
+    const event = await prismaClient.performanceEvent.findUnique({
+        where: { performanceEventId: eventId },
+        include: { 
+            schedules: true,
+            Place: true,
+        },
+        });
+
+        if (!event) {
+        return res.status(404).json({
+            status: false,
+            message: "Event not found",
+        });
+        }
+
+        return res.json({
+        status: true,
+        data: event
+        });
+    } catch (error) {
+        return res.status(500).json({
+        status: false,
+        message: "Failed to fetch detail",
+        error: String(error),
+        });
+    }
 };
 
+// =============================
+// GET SCHEDULES BY EVENT
+// =============================
 export const getSchedulesByEvent = async (req: Request, res: Response) => {
-const eventId = Number(req.params.id);
-const schedules = await prisma.eventSchedule.findMany({
-where: { performanceEventId: eventId },
-});
-res.json(schedules);
+    try {
+        const eventId = Number(req.params.id);
+
+        if (isNaN(eventId)) {
+        return res.status(400).json({ status: false, message: "Invalid ID" });
+        }
+
+        const schedules = await prismaClient.eventSchedule.findMany({
+        where: { performanceEventId: eventId },
+        });
+
+        return res.json({
+        status: true,
+        data: schedules
+        });
+    } catch (error) {
+        return res.status(500).json({
+        status: false,
+        message: "Failed to fetch schedules",
+        error: String(error),
+        });
+    }
 };
