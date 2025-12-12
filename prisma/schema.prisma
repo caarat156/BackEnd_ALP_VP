@@ -12,3 +12,64 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model User {
+    userId Int @id @default(autoincrement())
+    selectedLocation Int?
+    name String
+    username String @unique
+    email String @unique
+    password String
+    phoneNumber String?
+    profilePhoto String?
+    bookings EventBooking[]
+    reviews PlaceReview[]
+    reels ReelsContent[]
+}
+
+model Place {
+    placeId Int @id @default(autoincrement())
+    placeCategoryId Int
+    locationId Int
+    placeName String
+    placeDescription String
+    address String
+    gmaksLink String?
+    imageUrl String?
+    ratingAvg Float? @default(0)
+    reviews PlaceReview[]
+    reels ReelsContent[]
+    performances PerformanceEvent[]
+}
+
+model PerformanceEvent {
+    performanceEventId Int @id @default(autoincrement())
+    placeId Int
+    title String
+    eventDescription String
+    venueAddress String
+    gmaksLink String?
+    imageUrl String?
+    schedules EventSchedule[]
+    bookings EventBooking[]
+}
+
+model EventSchedule {
+    eventScheduleId Int @id @default(autoincrement())
+    performanceEventId Int
+    date DateTime
+    startTime String
+    endTime String
+    price Float
+    bookings EventBooking[]
+}
+
+model EventBooking {
+    eventBookingId Int @id @default(autoincrement())
+    userId Int
+    performanceEventId Int
+    eventScheduleId Int
+    totalPrice Float
+    quantity Int
+    status String
+}
