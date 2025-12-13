@@ -7,7 +7,7 @@ if (!authHeader) return res.status(401).json({ message: 'Missing token' });
 
 const token = authHeader.split(' ')[1];
 try {
-const decoded = jwt.verify(token, 'SECRETKEY');
+const decoded = process.env.JWT_SECRET as string
 (req as any).user = decoded;
 next();
 } catch (err) {

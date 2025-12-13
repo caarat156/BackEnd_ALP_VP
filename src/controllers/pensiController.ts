@@ -1,9 +1,6 @@
 import { Request, Response } from "express";
 import { prismaClient } from "../utils/databaseUtil";
 
-// =============================
-// GET ALL PENSI
-// =============================
 export const getAllPensi = async (req: Request, res: Response) => {
     try {
         const events = await prismaClient.performanceEvent.findMany({
@@ -25,9 +22,6 @@ export const getAllPensi = async (req: Request, res: Response) => {
     }
 };
 
-// =============================
-// GET PENSI DETAIL
-// =============================
 export const getPensiDetail = async (req: Request, res: Response) => {
     try {
         const eventId = Number(req.params.id);
@@ -64,9 +58,6 @@ export const getPensiDetail = async (req: Request, res: Response) => {
     }
 };
 
-// =============================
-// GET SCHEDULES BY EVENT
-// =============================
 export const getSchedulesByEvent = async (req: Request, res: Response) => {
     try {
         const eventId = Number(req.params.id);

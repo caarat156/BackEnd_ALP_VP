@@ -6,14 +6,14 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
-/* ---------- PLACEHOLDER MODELS (karena belum kamu Kirim) ---------- */
+
 
 model PlaceCategory {
   placeCategoryId Int @id @default(autoincrement())
@@ -48,7 +48,7 @@ model ReelsContent {
 }
 
 
-/* --------------------- MAIN MODELS ---------------------- */
+
 
 model User {
   userId Int @id @default(autoincrement())

@@ -4,6 +4,7 @@ import pensiRoutes from './routes/pensiRoutes';
 import paymentRoutes from './routes/paymentRoutes';
 import calendarRoutes from './routes/calendarRoutes';
 import authRoutes from './routes/authRoutes';
+import { errorMiddleware } from './middlewares/errorMiddleware';
 
 const app = express();
 app.use(cors());
@@ -14,4 +15,7 @@ app.use('/pensi', pensiRoutes);
 app.use('/payment', paymentRoutes);
 app.use('/calendar', calendarRoutes);
 
-app.listen(3000, () => console.log('Server running on port 3000'));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+app.use(errorMiddleware);

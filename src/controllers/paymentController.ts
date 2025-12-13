@@ -1,10 +1,12 @@
 import { Request, Response } from "express";
 import { prismaClient } from "../utils/databaseUtil";
+import { PaymentSchema } from "../validations/paymentValidation";
 
 export const checkoutPayment = async (req: Request, res: Response) => {
     try {
-        const { userId, performanceEventId, eventScheduleId, quantity } = req.body;
+        const data = PaymentSchema.parse(req.body);
 
+        const { userId, performanceEventId, eventScheduleId, quantity } = data;
         // Cek schedule
         const schedule = await prismaClient.eventSchedule.findUnique({
         where: { eventScheduleId },
