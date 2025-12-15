@@ -4,6 +4,10 @@ import pensiRoutes from './routes/pensiRoutes';
 import paymentRoutes from './routes/paymentRoutes';
 import calendarRoutes from './routes/calendarRoutes';
 import authRoutes from './routes/authRoutes';
+import locationRoutes from './routes/locationRoutes';
+import placeCategoryRoutes from './routes/placeCategoryRoutes';
+import placeRoutes from './routes/placeRoutes';
+import reviewRoutes from './routes/reviewRoutes';
 import { errorMiddleware } from './middlewares/errorMiddleware';
 
 const app = express();
@@ -14,6 +18,10 @@ app.use('/auth', authRoutes);
 app.use('/pensi', pensiRoutes);
 app.use('/payment', paymentRoutes);
 app.use('/calendar', calendarRoutes);
+app.use('/locations', locationRoutes);
+app.use('/categories', placeCategoryRoutes);
+app.use('/places', placeRoutes);
+app.use('/reviews', reviewRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

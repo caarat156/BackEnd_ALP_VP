@@ -52,6 +52,7 @@
     "outDir": "dist",
     "esModuleInterop": true,
     "strict": true,
+    "strictNullChecks": false,
     "skipLibCheck": true,
     "verbatimModuleSyntax": false
   },

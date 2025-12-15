@@ -8,8 +8,8 @@ export const checkoutPayment = async (req: Request, res: Response) => {
 
         const { userId, performanceEventId, eventScheduleId, quantity } = data;
         // Cek schedule
-        const schedule = await prismaClient.eventSchedule.findUnique({
-        where: { eventScheduleId },
+        const schedule = await prismaClient.event_schedule.findUnique({
+        where: { event_schedule_id: eventScheduleId },
         });
 
     if (!schedule) {
@@ -17,16 +17,15 @@ export const checkoutPayment = async (req: Request, res: Response) => {
         }
 
         // Hitung total harga
-    const totalPrice = schedule.price * quantity;
+    const totalPrice = Number(schedule.price!) * quantity;
 
         // Buat booking
-    const booking = await prismaClient.eventBooking.create({
+    const booking = await prismaClient.event_booking.create({
         data: {
-        userId,
-        performanceEventId,
-        eventScheduleId,
+        user_id: userId,
+        performance_event_id: performanceEventId,
         quantity,
-        totalPrice,
+        total_price: new Decimal(totalPrice),
         status: "PAID", // Dummy success
         },
         });
@@ -45,12 +44,12 @@ export const checkoutPayment = async (req: Request, res: Response) => {
     try {
     const id = Number(req.params.id);
 
-    const booking = await prismaClient.eventBooking.findUnique({
-        where: { eventBookingId: id },
+    const booking = await prismaClient.event_booking.findUnique({
+        where: { event_booking_id: id },
         include: {
-            PerformanceEvent: true,
-            EventSchedule: true,
-        },
+            performance_event: true,
+            event_schedule: true,
+        },users
         });
 
         if (!booking) {

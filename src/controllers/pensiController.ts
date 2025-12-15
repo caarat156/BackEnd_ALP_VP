@@ -3,9 +3,9 @@ import { prismaClient } from "../utils/databaseUtil";
 
 export const getAllPensi = async (req: Request, res: Response) => {
     try {
-        const events = await prismaClient.performanceEvent.findMany({
+        const events = await prismaClient.performance_event.findMany({
         include: {
-            Place: true,          // Include tempat / lokasi
+            place: true,          // Include tempat / lokasi
         },
         });
 
@@ -30,11 +30,11 @@ export const getPensiDetail = async (req: Request, res: Response) => {
         return res.status(400).json({ status: false, message: "Invalid ID" });
         }
 
-    const event = await prismaClient.performanceEvent.findUnique({
-        where: { performanceEventId: eventId },
+    const event = await prismaClient.performance_event.findUnique({
+        where: { performance_event_id: eventId },
         include: { 
-            schedules: true,
-            Place: true,
+            event_schedule: true,
+            place: true,
         },
         });
 
@@ -66,8 +66,8 @@ export const getSchedulesByEvent = async (req: Request, res: Response) => {
         return res.status(400).json({ status: false, message: "Invalid ID" });
         }
 
-        const schedules = await prismaClient.eventSchedule.findMany({
-        where: { performanceEventId: eventId },
+        const schedules = await prismaClient.event_schedule.findMany({
+        where: { performance_event_id: eventId },
         });
 
         return res.json({

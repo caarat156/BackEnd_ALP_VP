@@ -12,7 +12,7 @@ export const register = async (req: Request, res: Response) => {
     const { name, username, email, password } = data;
 
     // Cek email
-    const existing = await prismaClient.user.findUnique({
+    const existing = await prismaClient.users.findUnique({
       where: { email },
     });
 
@@ -24,7 +24,7 @@ export const register = async (req: Request, res: Response) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create user
-    const user = await prismaClient.user.create({
+    const user = await prismaClient.users.create({
       data: {
         name,
         username,
@@ -55,7 +55,7 @@ export const login = async (req: Request, res: Response) => {
     const { email, password } = data;
 
     // Cari user
-    const user = await prismaClient.user.findUnique({
+    const user = await prismaClient.users.findUnique({
       where: { email },
     });
 

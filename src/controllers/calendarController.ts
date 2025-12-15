@@ -32,10 +32,10 @@ export const getCalendarEvents = async (req: Request, res: Response) => {
         };
         }
 
-        const schedules = await prismaClient.eventSchedule.findMany({
+        const schedules = await prismaClient.event_schedule.findMany({
         where: filter,
         include: {
-            PerformanceEvent: true,
+            performance_event: true,
         },
         });
 
