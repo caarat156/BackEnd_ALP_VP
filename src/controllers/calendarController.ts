@@ -1,17 +1,32 @@
-import { Request, Response } from "express";
-import { prismaClient } from "../utils/databaseUtil";
+import { NextFunction, Request, Response } from "express"
+import { CalendarService } from "../services/calendarService"
 
-export const getCalendarEvents = async (req: Request, res: Response) => {
-    try {
-        const { date, month, year } = req.query;
+export class CalendarController {
 
-        let filter: any = {};
+    static async getHolidays(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) {
+        try {
+            const year = Number(req.query.year)
+            const country = req.query.country as string | undefined
 
-        // 1) Jika filter by specific date
-        if (date) {
-        const parsed = new Date(String(date));
-        if (isNaN(parsed.getTime())) {
-            return res.status(400).json({ message: "Invalid date format" });
+            if (isNaN(year)) {
+                throw new Error("Invalid year")
+            }
+
+            if (!country || country.trim() === "") {
+                throw new Error("Invalid country");
+            }
+
+            const response = await CalendarService.getHolidays(year, country)
+
+            res.status(200).json({
+                data: response
+            })
+        } catch (error) {
+            next(error)
         }
 
         filter.date = parsed;
@@ -45,4 +60,4 @@ export const getCalendarEvents = async (req: Request, res: Response) => {
         console.error(error);
         return res.status(500).json({ message: "Something went wrong" });
     }
-};
+}
