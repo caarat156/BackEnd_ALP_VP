@@ -1,48 +1,32 @@
-import { Request, Response } from "express";
-import { prismaClient } from "../utils/databaseUtil";
+import { NextFunction, Request, Response } from "express"
+import { CalendarService } from "../services/calendarService"
 
-export const getCalendarEvents = async (req: Request, res: Response) => {
-    try {
-        const { date, month, year } = req.query;
+export class CalendarController {
 
-        let filter: any = {};
+    static async getHolidays(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) {
+        try {
+            const year = Number(req.query.year)
+            const country = req.query.country as string | undefined
 
-        // 1) Jika filter by specific date
-        if (date) {
-        const parsed = new Date(String(date));
-        if (isNaN(parsed.getTime())) {
-            return res.status(400).json({ message: "Invalid date format" });
+            if (isNaN(year)) {
+                throw new Error("Invalid year")
+            }
+
+            if (!country || country.trim() === "") {
+                throw new Error("Invalid country");
+            }
+
+            const response = await CalendarService.getHolidays(year, country)
+
+            res.status(200).json({
+                data: response
+            })
+        } catch (error) {
+            next(error)
         }
-
-        filter.date = parsed;
-        }
-
-        // 2) Jika filter by month & year
-        if (month && year) {
-        const m = Number(month);
-        const y = Number(year);
-
-        if (isNaN(m) || isNaN(y)) {
-            return res.status(400).json({ message: "Invalid month/year format" });
-        }
-
-        filter.date = {
-            gte: new Date(`${y}-${String(m).padStart(2, "0")}-01`),
-            lt: new Date(`${y}-${String(m + 1).padStart(2, "0")}-01`),
-        };
-        }
-
-        const schedules = await prismaClient.eventSchedule.findMany({
-        where: filter,
-        include: {
-            PerformanceEvent: true,
-        },
-        });
-
-        return res.json(schedules);
-
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: "Something went wrong" });
     }
-};
+}

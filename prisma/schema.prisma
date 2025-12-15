@@ -111,7 +111,6 @@ model EventSchedule {
   bookings         EventBooking[]
 }
 
-
 model EventBooking {
   eventBookingId Int @id @default(autoincrement())
   userId Int
