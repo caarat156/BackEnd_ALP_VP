@@ -37,4 +37,4 @@ publicRouter.get("/pensi/:id", PensiController.getPensiDetail);
 publicRouter.get("/pensi/:id/schedules", PensiController.getSchedulesByEvent);
 
 // CALENDAR - Read-only
-publicRouter.get("/calendar/holidays", CalendarController.getHolidays);
+publicRouter.get("/calendar", CalendarController.getCalendar);

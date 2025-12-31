@@ -2,43 +2,50 @@ import { Request, Response } from "express";
 import { prismaClient } from "../utils/databaseUtil";
 import { PaymentSchema } from "../validations/paymentValidation";
 
-export const checkoutPayment = async (req: Request, res: Response) => {
-    try {
+export const paymentController = {
+    async checkout(req: Request, res: Response) {
+        try {
         const data = PaymentSchema.parse(req.body);
-
         const { userId, performanceEventId, eventScheduleId, quantity } = data;
-        // Cek schedule
+
         const schedule = await prismaClient.event_schedule.findUnique({
-        where: { event_schedule_id: eventScheduleId },
+            where: { event_schedule_id: eventScheduleId },
         });
 
-    if (!schedule) {
-    return res.status(404).json({ message: "Schedule not found" });
-    }
+        if (!schedule) {
+            return res.status(404).json({ message: "Schedule not found" });
+        }
 
-            return res.status(500).json({ message: "Something went wrong" });
-    }
-    };
+        return res.status(201).json({
+            success: true,
+            message: "Checkout success",
+        });
+        } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Something went wrong" });
+        }
+    },
 
-    export const getBooking = async (req: Request, res: Response) => {
-    try {
-    const id = Number(req.params.id);
+    async getBooking(req: Request, res: Response) {
+        try {
+        const id = Number(req.params.id);
 
-    const booking = await prismaClient.event_booking.findUnique({
-        where: { event_booking_id: id },
-        include: {
+        const booking = await prismaClient.event_booking.findUnique({
+            where: { event_booking_id: id },
+            include: {
             performance_event: true,
-            event_schedule: true,
-        },users
+            users: true,
+            },
         });
 
         if (!booking) {
-        return res.status(404).json({ message: "Booking not found" });
+            return res.status(404).json({ message: "Booking not found" });
         }
 
         return res.json(booking);
-    } catch (error) {
+        } catch (error) {
         console.error(error);
         return res.status(500).json({ message: "Something went wrong" });
-    }
+        }
+    },
 };

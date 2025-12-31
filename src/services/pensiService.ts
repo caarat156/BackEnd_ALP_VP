@@ -4,28 +4,28 @@ import { ResponseError } from "../error/responseError"
 export class PensiService {
 
     static async getAllPensi() {
-        return prismaClient.performanceEvent.findMany({
-            include: {
-                Place: true
-            }
+        return prismaClient.performance_event.findMany({
+        include: {
+            place: true
+        }
         })
     }
 
     static async getPensiDetail(eventId: number) {
         if (isNaN(eventId)) {
-            throw new ResponseError(400, "Invalid ID")
+        throw new ResponseError(400, "Invalid ID")
         }
 
-        const event = await prismaClient.performanceEvent.findUnique({
-            where: { performanceEventId: eventId },
-            include: {
-                schedules: true,
-                Place: true
-            }
+        const event = await prismaClient.performance_event.findUnique({
+        where: { performance_event_id: eventId },
+        include: {
+            event_schedule: true,
+            place: true
+        }
         })
 
         if (!event) {
-            throw new ResponseError(404, "Event not found")
+        throw new ResponseError(404, "Event not found")
         }
 
         return event
@@ -33,19 +33,11 @@ export class PensiService {
 
     static async getSchedulesByEvent(eventId: number) {
         if (isNaN(eventId)) {
-            throw new ResponseError(400, "Invalid ID")
+        throw new ResponseError(400, "Invalid ID")
         }
 
-        const event = await prismaClient.performanceEvent.findUnique({
-            where: { performanceEventId: eventId }
-        });
-
-        if (!event) {
-            throw new ResponseError(404, "Event not found");
-        }
-
-        return prismaClient.eventSchedule.findMany({
-            where: { performanceEventId: eventId }
-        });
+        return prismaClient.event_schedule.findMany({
+        where: { performance_event_id: eventId }
+        })
     }
 }

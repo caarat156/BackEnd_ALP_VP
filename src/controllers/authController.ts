@@ -1,88 +1,35 @@
-import { Request, Response } from "express";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { prismaClient } from "../utils/databaseUtil";
-import { RegisterSchema, LoginSchema } from "../validations/authValidation";
+import { Request, Response } from "express"
+import { AuthService } from "../services/authService"
 
-/* ===================== REGISTER ===================== */
-export const register = async (req: Request, res: Response) => {
-  try {
-    // ✅ VALIDASI BODY
-    const data = RegisterSchema.parse(req.body);
-    const { name, username, email, password } = data;
+export class AuthController {
 
-    // Cek email
-    const existing = await prismaClient.users.findUnique({
-      where: { email },
-    });
-
-    if (existing) {
-      return res.status(400).json({ message: "Email already exists" });
+  static async register(req: Request, res: Response) {
+    try {
+      const result = await AuthService.register(req.body)
+      res.status(201).json({
+        status: true,
+        data: result
+      })
+    } catch (e: any) {
+      res.status(e.status ?? 500).json({
+        status: false,
+        message: e.message
+      })
     }
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create user
-    const user = await prismaClient.users.create({
-      data: {
-        name,
-        username,
-        email,
-        password: hashedPassword,
-      },
-    });
-
-    // Hilangkan password dari response
-    const { password: _, ...safeUser } = user;
-
-    return res.status(201).json({
-      message: "Register successful",
-      user: safeUser,
-    });
-
-  } catch (error) {
-    console.error("Register Error:", error);
-    return res.status(500).json({ message: "Something went wrong" });
   }
-};
 
-/* ===================== LOGIN ===================== */
-export const login = async (req: Request, res: Response) => {
-  try {
-    // ✅ VALIDASI BODY
-    const data = LoginSchema.parse(req.body);
-    const { email, password } = data;
-
-    // Cari user
-    const user = await prismaClient.users.findUnique({
-      where: { email },
-    });
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+  static async login(req: Request, res: Response) {
+    try {
+      const result = await AuthService.login(req.body)
+      res.json({
+        status: true,
+        data: result
+      })
+    } catch (e: any) {
+      res.status(e.status ?? 500).json({
+        status: false,
+        message: e.message
+      })
     }
-
-    // Cek password
-    const validPassword = await bcrypt.compare(password, user.password);
-    if (!validPassword) {
-      return res.status(401).json({ message: "Invalid password" });
   }
-
-    // Generate JWT
-    const token = jwt.sign(
-      { userId: user.userId },
-      process.env.JWT_SECRET as string,
-      { expiresIn: "7d" }
-    );
-
-    return res.json({
-      message: "Login successful",
-      token,
-    });
-
-  } catch (error) {
-    console.error("Login Error:", error);
-    return res.status(500).json({ message: "Something went wrong" });
-  }
-};
+}
