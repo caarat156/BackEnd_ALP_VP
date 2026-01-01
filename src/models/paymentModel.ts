@@ -1,4 +1,4 @@
-import { EventBooking } from "@prisma/client"
+import { event_booking } from "@prisma/client"
 
 /* ================= REQUEST ================= */
 export interface PaymentCreateRequest {
@@ -7,18 +7,16 @@ export interface PaymentCreateRequest {
     quantity: number
 }
 
-/* ================= RESPONSE ================= */
 export interface PaymentResponse {
     eventBookingId: number
     totalPrice: number
     status: string
 }
 
-/* ================= MAPPER ================= */
-export function toPaymentResponse(booking: EventBooking): PaymentResponse {
+export function toPaymentResponse(booking: event_booking): PaymentResponse {
     return {
-    eventBookingId: booking.eventBookingId,
-    totalPrice: booking.totalPrice,
-    status: booking.status,
+        eventBookingId: booking.event_booking_id,
+        totalPrice: Number(booking.total_price),
+        status: booking.status ?? ""
     }
 }

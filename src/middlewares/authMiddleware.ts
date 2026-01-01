@@ -1,8 +1,14 @@
 import { Request, Response, NextFunction } from "express"
 import jwt from "jsonwebtoken"
 
-export const authMiddleware = (
-    req: Request,
+export interface AuthRequest extends Request {
+    user?: {
+        user_id: number
+    }
+    }
+
+    export const authMiddleware = (
+    req: AuthRequest,
     res: Response,
     next: NextFunction
     ) => {
@@ -18,11 +24,11 @@ export const authMiddleware = (
         const decoded = jwt.verify(
         token,
         process.env.JWT_SECRET as string
-        )
+        ) as { user_id: number }
 
-        ;(req as any).user = decoded
+        req.user = { user_id: decoded.user_id }
         next()
-    } catch (error) {
+    } catch {
         return res.status(401).json({ message: "Invalid token" })
     }
 }

@@ -6,7 +6,7 @@ import { AuthRequest } from '../middlewares/authMiddleware';
 export const reviewController = {
   async addReview(req: AuthRequest, res: Response) {
     try {
-      const userId = req.user!.userId;
+      const userId = req.user!.user_id;
       const { placeId, rating, comment } = req.body;
 
       const review = await reviewService.addReview({
@@ -28,7 +28,7 @@ export const reviewController = {
 
   async updateReview(req: AuthRequest, res: Response) {
     try {
-      const userId = req.user!.userId;
+      const userId = req.user!.user_id;
       const reviewId = parseInt(req.params.reviewId);
       const { rating, comment } = req.body;
 
@@ -49,7 +49,7 @@ export const reviewController = {
 
   async deleteReview(req: AuthRequest, res: Response) {
     try {
-      const userId = req.user!.userId;
+      const userId = req.user!.user_id;
       const reviewId = parseInt(req.params.reviewId);
 
       const result = await reviewService.deleteReview(reviewId, userId);
@@ -66,7 +66,7 @@ export const reviewController = {
   async getReviewsByPlaceId(req: AuthRequest, res: Response) {
     try {
       const placeId = parseInt(req.params.placeId);
-      const userId = req.user?.userId;
+      const userId = req.user?.user_id;
 
       const reviews = await reviewService.getReviewsByPlaceId(placeId, userId);
 
@@ -82,7 +82,7 @@ export const reviewController = {
 
   async getReviewById(req: AuthRequest, res: Response) {
     try {
-      const userId = req.user!.userId;
+      const userId = req.user!.user_id;
       const reviewId = parseInt(req.params.reviewId);
 
       const review = await reviewService.getReviewById(reviewId, userId);

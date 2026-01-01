@@ -15,7 +15,7 @@ export const reviewService = {
         });
 
         if (!place) {
-            throw new ResponseError('Place not found', 404);
+            throw new ResponseError(400, 'Place not found');
         }
 
         // Check if user already reviewed this place
@@ -27,7 +27,7 @@ export const reviewService = {
         });
 
         if (existingReview) {
-            throw new ResponseError('You have already reviewed this place', 400);
+            throw new ResponseError( 400, 'You have already reviewed this place');
         }
 
         // Create review
@@ -57,11 +57,11 @@ export const reviewService = {
         });
 
         if (!review) {
-            throw new ResponseError('Review not found', 404);
+            throw new ResponseError(404, 'Review not found');
         }
 
         if (review.user_id !== userId) {
-            throw new ResponseError('You are not authorized to update this review', 403);
+            throw new ResponseError(403, 'You are not authorized to update this review');
         }
 
         // Update review
@@ -90,11 +90,11 @@ export const reviewService = {
         });
 
         if (!review) {
-            throw new ResponseError('Review not found', 404);
+            throw new ResponseError(404, 'Review not found');
         }
 
         if (review.user_id !== userId) {
-            throw new ResponseError('You are not authorized to delete this review', 403);
+            throw new ResponseError(403, 'You are not authorized to delete this review');
         }
 
         // Delete review
@@ -131,11 +131,11 @@ export const reviewService = {
         });
 
         if (!review) {
-            throw new ResponseError('Review not found', 404);
+            throw new ResponseError(404, 'Review not found');
         }
 
         if (review.user_id !== userId) {
-            throw new ResponseError('You are not authorized to view this review', 403);
+            throw new ResponseError(403, 'You are not authorized to view this review');
         }
 
         return {

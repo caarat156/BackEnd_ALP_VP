@@ -23,7 +23,8 @@ export const locationService = {
         });
 
         if (!location) {
-            throw new ResponseError('Location not found', 404);
+            throw new ResponseError(404, 'Location not found')
+
         }
 
         return {
@@ -67,7 +68,7 @@ export const locationService = {
         });
 
         if (placesUsingLocation > 0) {
-            throw new ResponseError('Cannot delete location that is being used by places', 400);
+            throw new ResponseError(400,'Cannot delete location that is being used by places');
         }
 
         await prisma.location.delete({

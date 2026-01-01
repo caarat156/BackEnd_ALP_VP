@@ -22,8 +22,16 @@ export const PlaceReviewModel = {
     }),
 };
 
-export type CreatePlaceReviewDTO = z.infer<typeof PlaceReviewModel.Create>;
-export type UpdatePlaceReviewDTO = z.infer<typeof PlaceReviewModel.Update>;
 export type GetPlaceReviewByIdDTO = z.infer<typeof PlaceReviewModel.GetById>;
 export type GetPlaceReviewByPlaceIdDTO = z.infer<typeof PlaceReviewModel.GetByPlaceId>;
 export type GetPlaceReviewByUserIdDTO = z.infer<typeof PlaceReviewModel.GetByUserId>;
+export interface CreatePlaceReviewDTO {
+    userId: number
+    placeId: number
+    rating: number
+    comment: string
+} 
+export interface UpdatePlaceReviewDTO {
+    rating: number
+    comment: string
+}

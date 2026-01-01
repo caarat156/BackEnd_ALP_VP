@@ -69,7 +69,7 @@ export const placeService = {
         });
 
         if (!place) {
-            throw new ResponseError('Place not found', 404);
+            throw new ResponseError(400, 'Place not found');
         }
 
         // Calculate average rating

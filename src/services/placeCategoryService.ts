@@ -23,7 +23,7 @@ export const placeCategoryService = {
         });
 
         if (!category) {
-            throw new ResponseError('Category not found', 404);
+            throw new ResponseError(400,'Category not found');
         }
 
         return {
@@ -67,7 +67,7 @@ export const placeCategoryService = {
         });
 
         if (placesUsingCategory > 0) {
-            throw new ResponseError('Cannot delete category that is being used by places', 400);
+            throw new ResponseError(400, 'Cannot delete category that is being used by places');
         }
 
         await prisma.place_category.delete({
