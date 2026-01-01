@@ -1,7 +1,6 @@
 
 import { prismaClient as prisma } from '../utils/databaseUtil';
 import { ResponseError } from '../error/responseError';
-import { GetAllPlacesDTO } from '../models/placeModel';
 
 export const placeService = {
     async getAllPlaces(categoryId?: number, locationId?: number) {
@@ -21,7 +20,7 @@ export const placeService = {
             },
         });
 
-        // Calculate average rating for each place
+        // rata rata rating per place
         const placesWithRating = places.map((place: any) => {
             const totalRating = place.place_review.reduce(
                 (sum: number, review: any) => sum + review.rating,
@@ -39,7 +38,7 @@ export const placeService = {
                 image_url: place.image_url,
                 category_name: place.place_category.category_name,
                 city_name: place.location.city_name,
-                rating_avg: Math.round(avgRating * 10) / 10, // Round to 1 decimal
+                rating_avg: Math.round(avgRating * 10) / 10, // pembulatan 1 desimal
                 review_count: place.place_review.length,
             };
         });
