@@ -1,11 +1,14 @@
 import { Router } from 'express';
-import { register, login, getProfile, updateProfile } from '../controllers/authController';
-import { verifyToken } from '../middlewares/authMiddleware';
+import { AuthController } from '../controllers/authController'; // Import the Class
+import { verifyToken } from '../middlewares/authMiddleware'; // Make sure this exists
+import { upload } from '../middlewares/uploadMiddleware';
 
 const router = Router();
-router.post('/register', register);
-router.post('/login', login);
-router.get('/profile', verifyToken, getProfile);
-router.put('/profile', verifyToken, updateProfile);
+
+// Notice we use AuthController.methodName
+router.post('/register', AuthController.register);
+router.post('/login', AuthController.login);
+router.get('/profile', verifyToken, AuthController.getProfile);
+router.put('/profile', verifyToken, upload.single('profile_photo'), AuthController.updateProfile);
 
 export default router;

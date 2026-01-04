@@ -1,147 +1,77 @@
 import { Request, Response } from "express";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { prismaClient } from "../utils/databaseUtil";
-import { RegisterSchema, LoginSchema } from "../validations/authValidation";
+import { AuthService } from "../services/AuthService";
 
-/* ===================== REGISTER ===================== */
-export const register = async (req: Request, res: Response) => {
-  try {
-    // ✅ VALIDASI BODY
-    const data = RegisterSchema.parse(req.body);
-    const { name, username, email, password } = data;
-
-    // Cek email
-    const existing = await prismaClient.user.findUnique({
-      where: { email },
-    });
-
-    if (existing) {
-      return res.status(400).json({ message: "Email already exists" });
-    }
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create user
-    const user = await prismaClient.user.create({
-      data: {
-        name,
-        username,
-        email,
-        password: hashedPassword,
-      },
-    });
-
-    // Hilangkan password dari response
-    const { password: _, ...safeUser } = user;
-
-    return res.status(201).json({
-      message: "Register successful",
-      user: safeUser,
-    });
-
-  } catch (error) {
-    console.error("Register Error:", error);
-    return res.status(500).json({ message: "Something went wrong" });
-  }
+// Helper to handle errors uniformly
+const handleError = (res: Response, error: any) => {
+    const status = error.status || 500;
+    const message = error.message || "Internal Server Error";
+    res.status(status).json({ message });
 };
 
-/* ===================== LOGIN ===================== */
-export const login = async (req: Request, res: Response) => {
-  try {
-    // ✅ VALIDASI BODY
-    const data = LoginSchema.parse(req.body);
-    const { email, password } = data;
+export class AuthController {
 
-    // Cari user
-    const user = await prismaClient.user.findUnique({
-      where: { email },
-    });
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    static async register(req: Request, res: Response) {
+        try {
+            const result = await AuthService.register(req.body);
+            res.status(201).json({
+                message: "Register successful",
+                data: result
+            });
+        } catch (e) { handleError(res, e); }
     }
 
-    // Cek password
-    const validPassword = await bcrypt.compare(password, user.password);
-    if (!validPassword) {
-      return res.status(401).json({ message: "Invalid password" });
+    static async login(req: Request, res: Response) {
+        try {
+            const result = await AuthService.login(req.body);
+            res.json({
+                message: "Login successful",
+                token: result.token,
+                data: result.user // Android might look for 'data'
+            });
+        } catch (e) { handleError(res, e); }
     }
 
-    // Generate JWT
-    const token = jwt.sign(
-      { userId: user.userId },
-      process.env.JWT_SECRET as string,
-      { expiresIn: "7d" }
-    );
-
-    return res.json({
-      message: "Login successful",
-      token,
-    });
-
-  } catch (error) {
-    console.error("Login Error:", error);
-    return res.status(500).json({ message: "Something went wrong" });
-  }
-};
-
-// ... (Keep your register and login functions) ...
-
-/* ===================== GET PROFILE ===================== */
-export const getProfile = async (req: Request, res: Response) => {
-  try {
-    // Get ID from the token (set by middleware)
-    const userId = (req as any).user.userId; 
-
-    const user = await prismaClient.user.findUnique({
-      where: { userId: userId }, // CAREFUL: Check if your Prisma uses 'id' or 'userId'
-    });
-
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    // Exclude password from response
-    const { password: _, ...userData } = user;
-    
-    // Return wrapped in 'data' to match Android UserResponse
-    return res.json({ 
-        data: userData, 
-        message: "Success" 
-    });
-
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: "Error fetching profile" });
-  }
-};
-
-/* ===================== UPDATE PROFILE ===================== */
-export const updateProfile = async (req: Request, res: Response) => {
-  try {
-    const userId = (req as any).user.userId;
-    const { name, username, email, phoneNumber, password } = req.body;
-
-    const updateData: any = { name, username, email, phoneNumber };
-
-    // Only hash password if user typed a new one
-    if (password) {
-        updateData.password = await bcrypt.hash(password, 10);
+    static async getProfile(req: Request, res: Response) {
+        try {
+            // Assumes middleware attached user to req
+            const userId = (req as any).user.userId;
+            const result = await AuthService.getProfile(userId);
+            
+            res.json({
+                message: "Success",
+                data: result
+            });
+        } catch (e) { handleError(res, e); }
     }
 
-    const user = await prismaClient.user.update({
-      where: { userId: userId }, // CAREFUL: Check if your Prisma uses 'id' or 'userId'
-      data: updateData,
-    });
+static async updateProfile(req: Request, res: Response) {
+        try {
+            const userId = (req as any).user.userId;
+            const updateData = { ...req.body };
 
-    const { password: _, ...userData } = user;
+            if (req.file) {
+                // FIXED: Use process.env.BASE_URL or hardcode machine IP for testing
+                // If you are using Android Emulator, '10.0.2.2' points to your computer.
+                // It is safer to hardcode this for local development.
+                
+                const port = process.env.PORT || 3000;
+                
+                // OPTION A: If testing on Emulator
+                const baseUrl = `http://10.0.2.2:${port}`; 
+                
+                // OPTION B: If testing on Real Device (Use your Laptop's WiFi IP)
+                // const baseUrl = `http://192.168.1.5:${port}`;
 
-    return res.json({ 
-        data: userData, 
-        message: "Profile updated successfully" 
-    });
+                const imageUrl = `${baseUrl}/public/uploads/${req.file.filename}`;
+                updateData.profilePhoto = imageUrl;
+            }
 
-  } catch (error) {
-    return res.status(500).json({ message: "Error updating profile" });
-  }
-};
+            const result = await AuthService.updateProfile(userId, updateData);
+            
+            res.json({
+                message: "Profile updated successfully",
+                data: result
+            });
+        } catch (e) { handleError(res, e); }
+    }
+}
