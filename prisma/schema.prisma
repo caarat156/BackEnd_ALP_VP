@@ -65,8 +65,8 @@ model place {
   image_url         String?
   rating_avg        Decimal?            @db.Decimal(3, 2)
   performance_event performance_event[]
-  location          location           @relation(fields: [location_id], references: [location_id], onDelete: NoAction, onUpdate: NoAction)
-  place_category    place_category     @relation(fields: [place_category_id], references: [place_category_id], onDelete: NoAction, onUpdate: NoAction)
+  location          location?           @relation(fields: [location_id], references: [location_id], onDelete: NoAction, onUpdate: NoAction)
+  place_category    place_category?     @relation(fields: [place_category_id], references: [place_category_id], onDelete: NoAction, onUpdate: NoAction)
   place_review      place_review[]
   reels_content     reels_content[]
 }
