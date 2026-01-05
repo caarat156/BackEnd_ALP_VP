@@ -61,9 +61,9 @@ export class AuthService {
         return { token, user: safeUser };
     }
 
-    static async getProfile(userId: number) {
+    static async getProfile(user_id: number) {
         const user = await prismaClient.users.findUnique({
-            where: { user_id: userId }
+            where: { user_id: user_id }
         });
 
         if (!user) throw new ResponseError(404, "User not found");
@@ -72,7 +72,7 @@ export class AuthService {
         return safeUser;
     }
 
-    static async updateProfile(userId: number, request: any) {
+    static async updateProfile(user_id: number, request: any) {
         const data = UpdateProfileSchema.parse(request); 
         
         // Manual mapping ensures we don't send "phoneNumber" to a DB wanting "phone_number"
@@ -87,7 +87,7 @@ export class AuthService {
         }
 
         const user = await prismaClient.users.update({
-            where: { user_id: userId },
+            where: { user_id: user_id },
             data: updateData
         });
 
