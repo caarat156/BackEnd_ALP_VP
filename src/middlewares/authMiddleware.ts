@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken"
 
 export interface AuthRequest extends Request {
     user?: {
-        userId: number; // or string, depending on your Prisma schema
+        user_id: number; // or string, depending on your Prisma schema
     };
 }
 
