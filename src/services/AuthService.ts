@@ -9,7 +9,7 @@ export class AuthService {
     static async register(request: any) {
         const data = RegisterSchema.parse(request);
 
-        const existing = await prismaClient.users.findUnique({
+        const existing = await prismaClient.user.findUnique({
             where: { email: data.email }
         });
 
@@ -19,13 +19,13 @@ export class AuthService {
 
         const hashedPassword = await bcrypt.hash(data.password, 10);
 
-        const user = await prismaClient.users.create({
+        const user = await prismaClient.user.create({
             data: {
                 name: data.name,
                 username: data.username,
                 email: data.email,
                 password: hashedPassword,
-                phone_number: data.phone_number // Maps camelCase input to snake_case DB
+                phoneNumber: data.phoneNumber // Now this will actually save!
             }
         });
 
@@ -36,22 +36,17 @@ export class AuthService {
     static async login(request: any) {
         const data = LoginSchema.parse(request);
 
-        const user = await prismaClient.users.findUnique({
+        const user = await prismaClient.user.findUnique({
             where: { email: data.email }
         });
 
         if (!user) throw new ResponseError(404, "User not found");
 
-        // SAFETY CHECK: Handle null passwords (new DB schema)
-        if (!user.password) {
-            throw new ResponseError(401, "Invalid password (no password set)");
-        }
-
         const valid = await bcrypt.compare(data.password, user.password);
         if (!valid) throw new ResponseError(401, "Invalid password");
 
         const token = jwt.sign(
-            { user_id: user.user_id }, // <--- NOW USING user_id (Snake Case)
+            { userId: user.userId },
             process.env.JWT_SECRET as string,
             { expiresIn: "7d" }
         );
@@ -61,9 +56,9 @@ export class AuthService {
         return { token, user: safeUser };
     }
 
-    static async getProfile(user_id: number) {
-        const user = await prismaClient.users.findUnique({
-            where: { user_id: user_id }
+    static async getProfile(userId: number) {
+        const user = await prismaClient.user.findUnique({
+            where: { userId: userId }
         });
 
         if (!user) throw new ResponseError(404, "User not found");
@@ -72,23 +67,17 @@ export class AuthService {
         return safeUser;
     }
 
-    static async updateProfile(user_id: number, request: any) {
+    static async updateProfile(userId: number, request: any) {
+        // Validate partial update
         const data = UpdateProfileSchema.parse(request); 
-        
-        const updateData: any = {};
-        if (data.name) updateData.name = data.name;
-        if (data.username) updateData.username = data.username;
-        if (data.email) updateData.email = data.email;
-        if (data.phone_number) updateData.phone_number = data.phone_number;
-        if (data.profile_photo) {
-            updateData.profile_photo = data.profile_photo;
-        }
+        const updateData: any = { ...data };
+
         if (data.password) {
             updateData.password = await bcrypt.hash(data.password, 10);
         }
 
-        const user = await prismaClient.users.update({
-            where: { user_id: user_id },
+        const user = await prismaClient.user.update({
+            where: { userId: userId },
             data: updateData
         });
 

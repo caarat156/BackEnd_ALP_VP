@@ -3,32 +3,27 @@ import jwt from "jsonwebtoken"
 
 export interface AuthRequest extends Request {
     user?: {
-        user_id: number
-    }
-    }
+        user_id: number; // or string, depending on your Prisma schema
+    };
+}
 
-    export const authMiddleware = (
-    req: AuthRequest,
-    res: Response,
-    next: NextFunction
-    ) => {
-    const authHeader = req.headers.authorization
-
+export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
+    const authHeader = req.headers.authorization;
+    
+    // 1. Check if token exists
     if (!authHeader) {
-        return res.status(401).json({ message: "Unauthorized" })
+        return res.status(401).json({ message: 'Missing token' });
     }
 
-    const token = authHeader.split(" ")[1]
+    // 2. Remove "Bearer " prefix
+    const token = authHeader.split(' ')[1];
 
     try {
-        const decoded = jwt.verify(
-        token,
-        process.env.JWT_SECRET as string
-        ) as { user_id: number }
-
-        req.user = { user_id: decoded.user_id }
-        next()
-    } catch {
-        return res.status(401).json({ message: "Invalid token" })
+        // 3. Verify the token using your Secret Key
+        const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+        (req as AuthRequest).user = decoded as any; 
+        next();
+    } catch (err) {
+        return res.status(401).json({ message: 'Invalid or Expired Token' });
     }
-}
+};
