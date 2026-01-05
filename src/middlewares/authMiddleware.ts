@@ -7,7 +7,7 @@ export interface AuthRequest extends Request {
     };
 }
 
-export const verifyToken = (req: Request, res: Response, next: NextFunction) => {
+export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
     
     // 1. Check if token exists
