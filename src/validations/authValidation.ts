@@ -5,7 +5,7 @@ export const RegisterSchema = z.object({
   username: z.string().min(3, "Username too short"),
   email: z.string().email("Invalid email"),
   password: z.string().min(6, "Password min 6 chars"),
-  phoneNumber: z.string().optional()
+  phone_number: z.string().optional()
 });
 
 export const LoginSchema = z.object({
@@ -19,7 +19,7 @@ export const UpdateProfileSchema = z.object({
     email: z.string().email().optional(),
     phone_number: z.string().optional(),
     password: z.string().min(6).optional(),
-    profilePhoto: z.string().optional(),
+    profile_photo: z.string().optional(),
 });
 
 

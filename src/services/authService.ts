@@ -25,7 +25,7 @@ export class AuthService {
                 username: data.username,
                 email: data.email,
                 password: hashedPassword,
-                phone_number: data.phoneNumber // Maps camelCase input to snake_case DB
+                phone_number: data.phone_number // Maps camelCase input to snake_case DB
             }
         });
 
@@ -75,13 +75,14 @@ export class AuthService {
     static async updateProfile(user_id: number, request: any) {
         const data = UpdateProfileSchema.parse(request); 
         
-        // Manual mapping ensures we don't send "phoneNumber" to a DB wanting "phone_number"
         const updateData: any = {};
         if (data.name) updateData.name = data.name;
         if (data.username) updateData.username = data.username;
         if (data.email) updateData.email = data.email;
         if (data.phone_number) updateData.phone_number = data.phone_number;
-
+        if (data.profile_photo) {
+            updateData.profile_photo = data.profile_photo;
+        }
         if (data.password) {
             updateData.password = await bcrypt.hash(data.password, 10);
         }

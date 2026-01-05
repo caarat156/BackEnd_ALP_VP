@@ -34,8 +34,8 @@ export class AuthController {
     static async getProfile(req: Request, res: Response) {
         try {
             // Assumes middleware attached user to req
-            const userId = (req as any).user.userId;
-            const result = await AuthService.getProfile(userId);
+            const user_id = (req as any).user.user_id;
+            const result = await AuthService.getProfile(user_id);
             
             res.json({
                 message: "Success",
@@ -45,33 +45,21 @@ export class AuthController {
     }
 
 static async updateProfile(req: Request, res: Response) {
-        try {
-            const userId = (req as any).user.userId;
-            const updateData = { ...req.body };
+    try {
+        const user_id = (req as any).user.user_id;
+        const updateData = { ...req.body };
 
-            if (req.file) {
-                // FIXED: Use process.env.BASE_URL or hardcode machine IP for testing
-                // If you are using Android Emulator, '10.0.2.2' points to your computer.
-                // It is safer to hardcode this for local development.
-                
-                const port = process.env.PORT || 3000;
-                
-                // OPTION A: If testing on Emulator
-                const baseUrl = `http://10.0.2.2:${port}`; 
-                
-                // OPTION B: If testing on Real Device (Use your Laptop's WiFi IP)
-                // const baseUrl = `http://192.168.1.5:${port}`;
+        if (req.file) {
+            const cleanPath = req.file.path.replace("public/", "").replace(/\\/g, "/");
+            updateData.profile_photo = cleanPath;
+        }
 
-                const imageUrl = `${baseUrl}/public/uploads/${req.file.filename}`;
-                updateData.profilePhoto = imageUrl;
-            }
-
-            const result = await AuthService.updateProfile(userId, updateData);
-            
-            res.json({
-                message: "Profile updated successfully",
-                data: result
-            });
-        } catch (e) { handleError(res, e); }
+        const result = await AuthService.updateProfile(user_id, updateData);
+        
+        res.json({
+            message: "Profile updated successfully",
+            data: result
+        });
+    } catch (e) { handleError(res, e); }
     }
 }
