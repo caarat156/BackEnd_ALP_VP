@@ -2,3 +2,11 @@ node_modules
 
 /generated/prisma
 .env
+# Ignore compiled javascript files
+dist/
+build/
+node_modules/
+*.js
+# (But keep your config files if they are JS)
+!jest.config.js
+!tailwind.config.js
