@@ -1,51 +1,38 @@
 import { Request, Response } from "express";
-import { prismaClient } from "../utils/databaseUtil";
-import { PaymentSchema } from "../validations/paymentValidation";
+import { PaymentService } from "../services/paymentService";
+import { AuthRequest } from "../middlewares/authMiddleware"; // Pastikan import AuthRequest
+import { sendErrorResponse } from "../error/responseError"; // Gunakan helper error
 
 export const paymentController = {
     async checkout(req: Request, res: Response) {
         try {
-        const data = PaymentSchema.parse(req.body);
-        const { userId, performanceEventId, eventScheduleId, quantity } = data;
+            // Gunakan AuthRequest untuk mengambil user dari token
+            const user = (req as AuthRequest).user;
 
-        const schedule = await prismaClient.event_schedule.findUnique({
-            where: { event_schedule_id: eventScheduleId },
-        });
+            // Panggil Service untuk menyimpan data ke database
+            const booking = await PaymentService.checkout(user, req.body);
 
-        if (!schedule) {
-            return res.status(404).json({ message: "Schedule not found" });
-        }
-
-        return res.status(201).json({
-            success: true,
-            message: "Checkout success",
-        });
+            return res.status(201).json({
+                success: true,
+                message: "Checkout success",
+                data: booking, // Tampilkan data booking yang baru dibuat
+            });
         } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: "Something went wrong" });
+            return sendErrorResponse(res, error);
         }
     },
 
     async getBooking(req: Request, res: Response) {
         try {
-        const id = Number(req.params.id);
+            const id = Number(req.params.id);
+            const booking = await PaymentService.getBooking(id); // Gunakan Service juga di sini
 
-        const booking = await prismaClient.event_booking.findUnique({
-            where: { event_booking_id: id },
-            include: {
-            performance_event: true,
-            users: true,
-            },
-        });
-
-        if (!booking) {
-            return res.status(404).json({ message: "Booking not found" });
-        }
-
-        return res.json(booking);
+            return res.json({
+                success: true,
+                data: booking
+            });
         } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: "Something went wrong" });
+            return sendErrorResponse(res, error);
         }
     },
 };

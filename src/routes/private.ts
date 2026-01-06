@@ -40,7 +40,7 @@ privateRouter.get("/payment/booking/:id", paymentController.getBooking);
 privateRouter.get("/pensi", PensiController.getAllPensi);
 
 // --- PINDAHKAN INI KE ATAS (Sebelum :id) ---
-privateRouter.get("/pensi/history", PensiController.getHistory); 
+privateRouter.get("/history", PensiController.getHistory);
 privateRouter.post("/pensi", PensiController.createPensi); 
 // -------------------------------------------
 
