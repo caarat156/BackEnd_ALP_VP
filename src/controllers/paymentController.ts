@@ -38,16 +38,20 @@ export const paymentController = {
     },
 
     // Tambahkan di dalam paymentController object
+    // ... function checkout & getBooking yang sudah ada ...
+
+    // TAMBAHKAN INI:
     async getUserHistory(req: Request, res: Response) {
         try {
-            // Ambil userId dari Token (asumsi sudah login & middleware jalan)
+            // Ambil userId dari Token
             const userId = (req as any).user.user_id; 
 
+            // Ambil data booking user tersebut
             const bookings = await prismaClient.event_booking.findMany({
                 where: { user_id: userId },
                 include: {
                     performance_event: {
-                        include: { place: true } // Supaya bisa tampilkan nama tempat di history
+                        include: { place: true } // Include place biar detail
                     }
                 },
                 orderBy: { event_booking_id: 'desc' }

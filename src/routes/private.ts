@@ -30,7 +30,7 @@ privateRouter.delete("/categories/:categoryId", placeCategoryController.deleteCa
 // ...
 /* ===================== PAYMENT ===================== */
 privateRouter.post("/payment/checkout", paymentController.checkout);
-privateRouter.get("/payment/history", paymentController.getUserHistory); // <--- TAMBAHKAN INI
+privateRouter.get("/history", paymentController.getUserHistory);
 privateRouter.get("/payment/booking/:id", paymentController.getBooking);
 
 // ...
