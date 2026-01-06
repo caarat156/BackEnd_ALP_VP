@@ -6,6 +6,7 @@ import { locationController } from "../controllers/locationController";
 import { placeCategoryController } from "../controllers/placeCategoryController";
 import { placeController } from "../controllers/placeController";
 import { reviewController } from "../controllers/reviewController";
+import { reelController } from "../controllers/reelController";
 
 export const publicRouter = Router();
 
@@ -38,3 +39,6 @@ publicRouter.get("/pensi/:id/schedules", PensiController.getSchedulesByEvent);
 
 // CALENDAR - Read-only
 publicRouter.get("/calendar", CalendarController.getCalendar);
+
+// Additional public routes can be added here
+publicRouter.get("/reels", reelController.fetchAll);
