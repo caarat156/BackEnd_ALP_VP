@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { PaymentService } from "../services/paymentService";
 import { AuthRequest } from "../middlewares/authMiddleware"; // Pastikan import AuthRequest
 import { sendErrorResponse } from "../error/responseError"; // Gunakan helper error
+import { prismaClient } from "../utils/databaseUtil";
 
 export const paymentController = {
     async checkout(req: Request, res: Response) {
@@ -33,6 +34,33 @@ export const paymentController = {
             });
         } catch (error) {
             return sendErrorResponse(res, error);
+        }
+    },
+
+    // Tambahkan di dalam paymentController object
+    async getUserHistory(req: Request, res: Response) {
+        try {
+            // Ambil userId dari Token (asumsi sudah login & middleware jalan)
+            const userId = (req as any).user.user_id; 
+
+            const bookings = await prismaClient.event_booking.findMany({
+                where: { user_id: userId },
+                include: {
+                    performance_event: {
+                        include: { place: true } // Supaya bisa tampilkan nama tempat di history
+                    }
+                },
+                orderBy: { event_booking_id: 'desc' }
+            });
+
+            return res.status(200).json({
+                success: true,
+                message: "History retrieved successfully",
+                data: bookings,
+            });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: "Something went wrong" });
         }
     },
 };

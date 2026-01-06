@@ -27,10 +27,13 @@ privateRouter.post("/categories", placeCategoryController.createCategory);
 privateRouter.put("/categories/:categoryId", placeCategoryController.updateCategory);
 privateRouter.delete("/categories/:categoryId", placeCategoryController.deleteCategory);
 
-/* ===================== REVIEW ===================== */
-privateRouter.post("/reviews", reviewController.addReview);
-privateRouter.put("/reviews/:reviewId", reviewController.updateReview);
-privateRouter.delete("/reviews/:reviewId", reviewController.deleteReview);
+// ...
+/* ===================== PAYMENT ===================== */
+privateRouter.post("/payment/checkout", paymentController.checkout);
+privateRouter.get("/payment/history", paymentController.getUserHistory); // <--- TAMBAHKAN INI
+privateRouter.get("/payment/booking/:id", paymentController.getBooking);
+
+// ...
 
 /* ===================== PAYMENT ===================== */
 privateRouter.post("/payment/checkout", paymentController.checkout);
