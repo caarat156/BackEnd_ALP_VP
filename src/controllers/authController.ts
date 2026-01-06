@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { AuthService } from "../services/AuthService";
+import { AuthService } from "../services/authService";
 
 // Helper to handle errors uniformly
 const handleError = (res: Response, error: any) => {
@@ -44,22 +44,27 @@ export class AuthController {
         } catch (e) { handleError(res, e); }
     }
 
-static async updateProfile(req: Request, res: Response) {
-    try {
-        const user_id = (req as any).user.user_id;
-        const updateData = { ...req.body };
+    static async updateProfile(req: Request, res: Response) {
+      try {
+          const user_id = (req as any).user.user_id;
+          const updateData = { ...req.body };
 
-        if (req.file) {
-            const cleanPath = req.file.path.replace("public/", "").replace(/\\/g, "/");
-            updateData.profile_photo = cleanPath;
-        }
+          // PERBAIKAN DI SINI: Cast req ke 'any' untuk mengakses .file
+          const file = (req as any).file;
 
-        const result = await AuthService.updateProfile(user_id, updateData);
-        
-        res.json({
-            message: "Profile updated successfully",
-            data: result
-        });
-    } catch (e) { handleError(res, e); }
-    }
+          if (file) {
+              // Gunakan variable 'file' yang sudah diambil
+              // Tips tambahan: Regex replace(/\\/g, "/") memastikan path aman di Windows
+              const cleanPath = file.path.replace("public/", "").replace(/\\/g, "/");
+              updateData.profile_photo = cleanPath;
+          }
+
+          const result = await AuthService.updateProfile(user_id, updateData);
+          
+          res.json({
+              message: "Profile updated successfully",
+              data: result
+          });
+      } catch (e) { handleError(res, e); }
+  }
 }

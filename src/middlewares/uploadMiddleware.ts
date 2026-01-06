@@ -1,6 +1,7 @@
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import { Request } from "express"; // Import tipe Request dari express
 
 // 1. Setup the folder
 const uploadDir = "public/uploads";
@@ -10,10 +11,11 @@ if (!fs.existsSync(uploadDir)) {
 
 // 2. Configure Storage (Location + Filename)
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
+    // Tambahkan tipe :any pada parameter untuk mengatasi error implicit any
+    destination: (req: any, file: any, cb: any) => {
         cb(null, uploadDir);
     },
-    filename: (req, file, cb) => {
+    filename: (req: any, file: any, cb: any) => {
         // Name format: fieldname-timestamp.jpg
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
