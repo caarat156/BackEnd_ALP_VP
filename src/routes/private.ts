@@ -9,6 +9,8 @@ import { reviewController } from "../controllers/reviewController";
 import { authController } from "../controllers/authController"; 
 import { upload } from "../middlewares/uploadMiddleware"; 
 import { placeController } from "../controllers/placeController"; // Pastikan mengimpor placeController
+import { reelController } from "../controllers/reelController";
+import { uploadReel } from "../middlewares/reelUploadMiddleware";
 
 export const privateRouter = Router();
 
@@ -57,3 +59,7 @@ privateRouter.get("/calendar", CalendarController.getCalendar);
 /* ===================== AUTH ===================== */
 privateRouter.get("/auth/profile", authController.getProfile);
 privateRouter.put("/auth/profile", upload.single('profile_photo'), authController.updateProfile);
+
+/* ===================== REEL ===================== */
+privateRouter.post("/reels", uploadReel.single("file"), reelController.upload);
+privateRouter.get("/reels", reelController.fetchAll);
