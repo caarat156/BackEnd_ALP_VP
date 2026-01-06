@@ -93,4 +93,22 @@ export const placeController = {
             return sendErrorResponse(res, error);
         }
     },
+
+    async updatePlace(req: Request, res: Response) {
+        try {
+            const placeId = parseInt(req.params.placeId);
+            const data = req.body; // Data yang mau direvisi (misal locationId: 2)
+            
+            // Panggil service updatePlace yang sudah ada
+            const place = await placeService.updatePlace(placeId, data);
+
+            return res.status(200).json({
+                success: true,
+                message: 'Place updated successfully',
+                data: place,
+            });
+        } catch (error) {
+            return sendErrorResponse(res, error);
+        }
+    },
 };

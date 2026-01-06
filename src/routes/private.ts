@@ -21,6 +21,7 @@ privateRouter.delete("/locations/:locationId", locationController.deleteLocation
 
 /* ===================== PLACE (Tambahkan ini) ===================== */
 privateRouter.post("/places", placeController.createPlace);
+privateRouter.put("/places/:placeId", placeController.updatePlace);
 
 /* ===================== CATEGORY ===================== */
 privateRouter.post("/categories", placeCategoryController.createCategory);
