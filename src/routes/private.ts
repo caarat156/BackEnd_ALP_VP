@@ -38,10 +38,15 @@ privateRouter.get("/payment/booking/:id", paymentController.getBooking);
 
 /* ===================== PENSI ===================== */
 privateRouter.get("/pensi", PensiController.getAllPensi);
+
+// --- PINDAHKAN INI KE ATAS (Sebelum :id) ---
+privateRouter.get("/pensi/history", PensiController.getHistory); 
+privateRouter.post("/pensi", PensiController.createPensi); 
+// -------------------------------------------
+
+// Route dinamis (:id) ditaruh di bawah agar tidak 'memakan' route history
 privateRouter.get("/pensi/:id", PensiController.getPensiDetail);
 privateRouter.get("/pensi/:id/schedules", PensiController.getSchedulesByEvent);
-privateRouter.get("/pensi/history", PensiController.getHistory); // Wajib login
-privateRouter.post("/pensi", PensiController.createPensi);
 
 /* ===================== CALENDAR ===================== */
 privateRouter.get("/calendar", CalendarController.getCalendar);
