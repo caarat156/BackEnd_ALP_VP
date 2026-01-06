@@ -36,6 +36,8 @@ privateRouter.get("/payment/booking/:id", paymentController.getBooking);
 privateRouter.get("/pensi", PensiController.getAllPensi);
 privateRouter.get("/pensi/:id", PensiController.getPensiDetail);
 privateRouter.get("/pensi/:id/schedules", PensiController.getSchedulesByEvent);
+privateRouter.get("/pensi/history", PensiController.getHistory); // Wajib login
+privateRouter.post("/pensi", PensiController.createPensi);
 
 /* ===================== CALENDAR ===================== */
 privateRouter.get("/calendar", CalendarController.getCalendar);
