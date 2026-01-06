@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { placeService } from '../services/placeService';
 import { sendErrorResponse } from '../error/responseError';
+import { PlaceModel } from '../models/placeModel';
 
 export const placeController = {
     async getAllPlaces(req: Request, res: Response) {
@@ -74,5 +75,22 @@ export const placeController = {
     } catch (error) {
         return sendErrorResponse(res, error);
     }
+    },
+
+    async createPlace(req: Request, res: Response) {
+        try {
+            // Validasi input
+            const data = PlaceModel.Create.parse(req.body);
+            
+            const place = await placeService.createPlace(data);
+
+            return res.status(201).json({
+                success: true,
+                message: 'Place created successfully',
+                data: place,
+            });
+        } catch (error) {
+            return sendErrorResponse(res, error);
+        }
     },
 };

@@ -8,6 +8,7 @@ import { placeCategoryController } from "../controllers/placeCategoryController"
 import { reviewController } from "../controllers/reviewController";
 import { AuthController } from "../controllers/authController"; 
 import { upload } from "../middlewares/uploadMiddleware"; 
+import { placeController } from "../controllers/placeController"; // Pastikan mengimpor placeController
 
 export const privateRouter = Router();
 
@@ -17,6 +18,9 @@ privateRouter.use(authMiddleware);
 privateRouter.post("/locations", locationController.createLocation);
 privateRouter.put("/locations/:locationId", locationController.updateLocation);
 privateRouter.delete("/locations/:locationId", locationController.deleteLocation);
+
+/* ===================== PLACE (Tambahkan ini) ===================== */
+privateRouter.post("/places", placeController.createPlace);
 
 /* ===================== CATEGORY ===================== */
 privateRouter.post("/categories", placeCategoryController.createCategory);
