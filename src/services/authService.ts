@@ -4,7 +4,7 @@ import { prismaClient } from "../utils/databaseUtil";
 import { RegisterSchema, LoginSchema, UpdateProfileSchema } from "../validations/authValidation";
 import { ResponseError } from "../error/responseError";
 
-export class AuthService {
+export class authService {
 
     static async register(request: any) {
         const data = RegisterSchema.parse(request);

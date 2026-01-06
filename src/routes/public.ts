@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { AuthController } from "../controllers/authController";
+import { authController } from "../controllers/authController";
 import { PensiController } from "../controllers/pensiController";
 import { CalendarController } from "../controllers/calendarController";
 import { locationController } from "../controllers/locationController";
@@ -10,8 +10,8 @@ import { reviewController } from "../controllers/reviewController";
 export const publicRouter = Router();
 
 // AUTH - Public
-publicRouter.post("/auth/register", AuthController.register);
-publicRouter.post("/auth/login", AuthController.login);
+publicRouter.post("/auth/register", authController.register);
+publicRouter.post("/auth/login", authController.login);
 
 // LOCATION - Read-only
 publicRouter.get("/locations", locationController.getAllLocations);

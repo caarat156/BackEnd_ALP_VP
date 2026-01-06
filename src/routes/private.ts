@@ -6,7 +6,7 @@ import { paymentController } from "../controllers/paymentController";
 import { locationController } from "../controllers/locationController";
 import { placeCategoryController } from "../controllers/placeCategoryController";
 import { reviewController } from "../controllers/reviewController";
-import { AuthController } from "../controllers/authController"; 
+import { authController } from "../controllers/authController"; 
 import { upload } from "../middlewares/uploadMiddleware"; 
 import { placeController } from "../controllers/placeController"; // Pastikan mengimpor placeController
 
@@ -55,5 +55,5 @@ privateRouter.get("/pensi/:id/schedules", PensiController.getSchedulesByEvent);
 privateRouter.get("/calendar", CalendarController.getCalendar);
 
 /* ===================== AUTH ===================== */
-privateRouter.get("/auth/profile", AuthController.getProfile);
-privateRouter.put("/auth/profile", upload.single('profile_photo'), AuthController.updateProfile);
+privateRouter.get("/auth/profile", authController.getProfile);
+privateRouter.put("/auth/profile", upload.single('profile_photo'), authController.updateProfile);

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { AuthService } from "../services/authService";
+import { authService } from "../services/authService";
 
 // Helper to handle errors uniformly
 const handleError = (res: Response, error: any) => {
@@ -8,11 +8,11 @@ const handleError = (res: Response, error: any) => {
     res.status(status).json({ message });
 };
 
-export class AuthController {
+export class authController {
 
     static async register(req: Request, res: Response) {
         try {
-            const result = await AuthService.register(req.body);
+            const result = await authService.register(req.body);
             res.status(201).json({
                 message: "Register successful",
                 data: result
@@ -22,7 +22,7 @@ export class AuthController {
 
     static async login(req: Request, res: Response) {
         try {
-            const result = await AuthService.login(req.body);
+            const result = await authService.login(req.body);
             res.json({
                 message: "Login successful",
                 token: result.token,
@@ -35,7 +35,7 @@ export class AuthController {
         try {
             // Assumes middleware attached user to req
             const user_id = (req as any).user.user_id;
-            const result = await AuthService.getProfile(user_id);
+            const result = await authService.getProfile(user_id);
             
             res.json({
                 message: "Success",
@@ -45,26 +45,26 @@ export class AuthController {
     }
 
     static async updateProfile(req: Request, res: Response) {
-      try {
-          const user_id = (req as any).user.user_id;
-          const updateData = { ...req.body };
+        try {
+            const user_id = (req as any).user.user_id;
+            const updateData = { ...req.body };
 
-          // PERBAIKAN DI SINI: Cast req ke 'any' untuk mengakses .file
-          const file = (req as any).file;
+            // PERBAIKAN DI SINI: Cast req ke 'any' untuk mengakses .file
+            const file = (req as any).file;
 
-          if (file) {
-              // Gunakan variable 'file' yang sudah diambil
-              // Tips tambahan: Regex replace(/\\/g, "/") memastikan path aman di Windows
-              const cleanPath = file.path.replace("public/", "").replace(/\\/g, "/");
-              updateData.profile_photo = cleanPath;
-          }
+            if (file) {
+                // Gunakan variable 'file' yang sudah diambil
+                // Tips tambahan: Regex replace(/\\/g, "/") memastikan path aman di Windows
+                const cleanPath = file.path.replace("public/", "").replace(/\\/g, "/");
+                updateData.profile_photo = cleanPath;
+            }
 
-          const result = await AuthService.updateProfile(user_id, updateData);
-          
-          res.json({
-              message: "Profile updated successfully",
-              data: result
-          });
-      } catch (e) { handleError(res, e); }
-  }
+            const result = await authService.updateProfile(user_id, updateData);
+            
+                res.json({
+                    message: "Profile updated successfully",
+                    data: result
+                });
+            } catch (e) { handleError(res, e); }
+        }
 }
