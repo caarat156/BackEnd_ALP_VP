@@ -4,15 +4,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export class ReelService {
-    static async createReel(userId: number, data: { caption?: string; content_url: string }) {
-        return await prisma.reels_content.create({
-        data: {
-            user_id: userId,
-            caption: data.caption,
-            content_url: data.content_url,
-        },
-        });
-    }
+
 
     static async getAllReels() {
         return await prisma.reels_content.findMany({
@@ -28,6 +20,28 @@ export class ReelService {
             }
         },
         orderBy: { created_at: 'desc' }
+        });
+    }
+
+    static async getReelsByUserId(userId: number) {
+        return await prisma.reels_content.findMany({
+            where: {
+                user_id: userId // Filters by the logged-in user
+            },
+            orderBy: {
+                created_at: 'desc'
+            }
+        });
+    }
+
+    static async createReel(userId: number, data: { caption: string, content_url: string }) {
+        return await prisma.reels_content.create({
+            data: {
+                user_id: userId,
+                caption: data.caption,
+                content_url: data.content_url,
+                created_at: new Date()
+            }
         });
     }
 }

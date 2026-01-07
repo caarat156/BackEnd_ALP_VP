@@ -4,6 +4,7 @@ import path from "path";
 import { publicRouter } from "./routes/public";
 import { privateRouter } from "./routes/private";
 import { errorMiddleware } from "./middlewares/errorMiddleware";
+import { authMiddleware } from "./middlewares/authMiddleware";
 
 dotenv.config();
 

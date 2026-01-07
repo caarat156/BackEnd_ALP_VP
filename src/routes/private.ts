@@ -62,3 +62,4 @@ privateRouter.put("/auth/profile", upload.single('profile_photo'), authControlle
 
 /* ===================== REEL ===================== */
 privateRouter.post("/reels", uploadReel.single("file"), reelController.upload);
+privateRouter.get('/reels/me', reelController.fetchMyReels);
