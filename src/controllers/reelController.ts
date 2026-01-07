@@ -69,4 +69,27 @@ export class reelController {
             res.status(500).json({ status: "error", message: e.message });
         }
     }
+
+    static async deleteReel(req: Request, res: Response) {
+        try {
+            // 1. Get User ID from Token (Auth Middleware)
+            const user = (req as any).user;
+            const userId = Number(user.id || user.user_id);
+
+            // 2. Get Content ID from URL Parameter
+            // Route: DELETE /reels/:contentId
+            const contentId = parseInt(req.params.contentId);
+
+            if (isNaN(contentId)) {
+                return res.status(400).json({ status: "error", message: "Invalid Reel ID" });
+            }
+
+            // 3. Call Service
+            await ReelService.deleteReel(contentId, userId);
+
+            res.status(200).json({ status: "success", message: "Reel deleted successfully" });
+        } catch (error: any) {
+            res.status(500).json({ status: "error", message: error.message });
+        }
+    }
 }
